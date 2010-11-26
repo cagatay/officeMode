@@ -1,0 +1,96 @@
+<!doctype html>
+<title>Office Mode Options</title>
+
+<style>
+  textarea {
+    display: block;
+		
+  }
+  ul {
+    list-style: none;
+    margin: 0 auto;
+    padding: 0;
+  }
+  
+  li input {
+    width: 200px;
+  }
+  
+  .wr {
+    color: red;
+  }
+</style>
+
+<script>
+  var EXP = /^([a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,6}$/;
+  
+  var list = localStorage["list"];
+  if(list === undefined) {
+    list = ["facebook.com", "reddit.com"];
+  }
+  else {
+    list = list.split(",");
+    list = list.slice(0, list.length - 1);
+  }
+  
+  var newList = "";
+  
+  function rmInput() {
+    var p = this.parentNode.parentNode;
+    var ec = p.childNodes.length;
+    if(ec != 3) {
+      p.removeChild(this.parentNode);
+    }
+  }
+  window.onload = function () {
+    
+    var rb = document.getElementsByClassName("rb");
+    for(var i = 0; i < rb.length; i++) {
+      rb[i].onclick = rmInput;
+    }
+    
+    var sb = document.getElementById("sb");
+    sb.onclick = function () {
+      var al = document.getElementsByTagName("input");
+      for(var i = 0; i < al.length; i++) {
+        var e = al[i];
+        if( EXP.test(e.value) ) {
+          newList = newList + e.value + ",";
+        }
+        else {
+          e.parentNode.lastChild.value = "Invalid";
+        }
+      }
+      
+      localStorage["list"] = newList;
+      chrome.extension.getBackgroundPage().refreshParameters();
+    };
+    
+    var ab = document.getElementById("ab");
+    ab.onclick = function () {
+      var n = document.getElementById("ll");
+      var e = n.cloneNode(true);
+      e.childNodes[1].onclick = rmInput;
+      e.firstChild.value = "";
+      e.removeAttribute("id");
+      document.getElementById("il").appendChild(e);
+    }
+    
+      
+    var nn;
+    var il = document.getElementById("il");
+    for(var i = 0; i < list.length; i++) {
+      nn = document.getElementById("ll").cloneNode(true);
+      nn.firstChild.value = list[i];
+      nn.childNodes[1].onclick = rmInput;
+      nn.removeAttribute("id");
+      il.insertBefore(nn, il.firstChild);
+    }
+  };
+</script>
+  <header><h1>Office Mode Options</h1></header>
+  <h3>Add the addresses of the websites you want office mode to act on</h3>
+  <button id="ab">Add</button><button id="sb">Save</button>
+  <ul id="il">
+    <li id="ll"><input type="text" class="it"><button class="rb">Remove</button><span class="wr"></span></li>
+  </ul>

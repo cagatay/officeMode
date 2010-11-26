@@ -1,0 +1,59 @@
+<html>
+<script>
+  var list;
+  var active = false;
+  
+  function refreshParameters() {
+    list = localStorage["list"];
+    if(list === undefined || list.length == 0) {
+      list = [];
+    }
+    else {
+      list = list.split(",");
+      list = list.slice(0, list.length - 1);
+    }
+  }
+  
+  refreshParameters();
+  
+  chrome.browserAction.onClicked.addListener(function(tab) {
+    var imageURL;
+    if(active) {
+      active = false;
+      imageURL = chrome.extension.getURL("icons/icon_passive.gif");
+      chrome.browserAction.setIcon({path : imageURL});
+    }
+    else {
+      active = true;
+      imageURL = chrome.extension.getURL("icons/icon.gif");
+      chrome.browserAction.setIcon({path : imageURL});
+    }
+    chrome.tabs.getAllInWindow(tab.windowId, function (tabs) {
+      for(t in tabs) {
+	if(tabs[t].url.indexOf("chrome://") == -1) {
+	  chrome.tabs.update(tabs[t].id, {url : tabs[t].url});  
+	}
+      }
+    })
+  });
+  
+  chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if(active) {
+      var u = tab.url;
+      var m = false;
+      
+      for(i in list) {
+        if(u.indexOf(list[i]) != -1) {
+	  m = true;
+	  break;  
+        }
+      }
+      
+      if(m) {
+	chrome.tabs.executeScript(tab.id, {file:"script.js", allFrames:true});
+	chrome.tabs.insertCSS(tab.id, {file:"style.css", allFrames:true});
+      }
+    }
+  });
+</script>
+</html>

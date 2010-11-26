@@ -1,0 +1,17 @@
+{
+  "name": "Office Mode",
+  "version": "1.0",
+  "description": "Lets you view your favorite sites in front of your boss",
+  "icons": { "16": "icon16.png",
+             "48": "icon48.png",
+            "128": "icon128.png" },
+  "browser_action": {
+    "default_icon": "icons/icon_passive.gif",
+    "default_title": "Switch office mode"
+  },
+  "permissions": [
+    "tabs", "http://*/*", "https://*/*"
+  ],
+  "background_page": "background.html",
+  "options_page": "options.html"
+}
